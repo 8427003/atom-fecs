@@ -14,12 +14,12 @@ var editor = null;
 var errorLineSet = null;
 
 var lineDecorConfig = {
-    type: 'line',
-    class: 'fecs-line'
+    'type': 'line',
+    'class': 'fecs-line'
 };
 var lineNumDecorConfig = {
-    type: 'line-number',
-    class: 'fecs-line-number'
+    'type': 'line-number',
+    'class': 'fecs-line-number'
 };
 var checkExtMap = {
     '.js': true,
