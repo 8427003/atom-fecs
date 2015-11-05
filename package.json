@@ -1,8 +1,17 @@
 {
-  "name": "atom-fecs",
+  "name": "baidu-fecs",
   "version": "0.0.2",
   "description": "baidu fecs",
-  "keywords": ["atom-fecs","baidu-fecs","fecs", "baidu fecs", "baidu.com", "eslint", "jslint","js"],
+  "keywords": [
+    "atom-fecs",
+    "baidu-fecs",
+    "fecs",
+    "baidu fecs",
+    "baidu.com",
+    "eslint",
+    "jslint",
+    "js"
+  ],
   "repository": "https://github.com/8427003/atom-fecs",
   "license": "MIT",
   "engines": {
