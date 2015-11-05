@@ -1,0 +1,25 @@
+// The ui-variables file is provided by base themes provided by Atom.
+//
+// See https://github.com/atom/atom-dark-ui/blob/master/styles/ui-variables.less
+// for a full listing of what's available.
+@import "ui-variables";
+
+atom-text-editor::shadow {
+	.fecs-line {
+		background-color: fade(@background-color-error, 20%);
+	}
+
+	.fecs-errors {
+		text-align: left;
+	}
+
+	.gutter {
+		.fecs-line-number {
+			color: @text-color-error !important;
+			opacity: 1;
+			&:hover {
+				background-color: @background-color-highlight;
+			}
+		}
+	}
+}
