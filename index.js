@@ -9,6 +9,7 @@ var path = require('path');
 
 var statusBar = null;
 var disposables = null;
+var mainDisposables = null;
 var editor = null;
 var errorLineSet = null;
 
@@ -89,37 +90,40 @@ function updateStatusBar() {
     fecsStatusBar.textContent = text;
     fecsStatusBar.setAttribute('title', text);
 }
+function registerEvents(){
+    editor = atom.workspace.getActiveTextEditor();
+    if (!editor) {
+        return;
+    }
 
+    var filePath = getPath();
+    console.log('curCheckFile' + filePath);
+    if (!filePath) {
+        return;
+    }
+    var ext = path.extname(filePath);
+
+    if (!checkExtMap[ext]) {
+        return;
+    }
+    disposables && disposables.dispose();
+    disposables = new Atom.CompositeDisposable();
+    disposables.add(editor.onDidSave(onSaveHandler));
+    disposables.add(editor.onDidChangeCursorPosition(onChangeCursorPositionHandler));
+    onSaveHandler();
+}
 module.exports = {
     activate: function () {
-        editor = atom.workspace.getActiveTextEditor();
-        if (!editor) {
-            return;
-        }
-
-        var filePath = getPath();
-        if (!filePath) {
-            return;
-        }
-        var ext = path.extname(filePath);
-
-        if (!checkExtMap[ext]) {
-            return;
-        }
-
-        disposables = new Atom.CompositeDisposable();
-        disposables.add(editor.onDidSave(onSaveHandler));
-        disposables.add(editor.onDidChangeCursorPosition(onChangeCursorPositionHandler));
-        onSaveHandler();
+        mainDisposables = new Atom.CompositeDisposable();
+        mainDisposables.add(atom.workspace.observeActivePaneItem(registerEvents));
     },
     consumeStatusBar: function (_statusBar) {
         statusBar = _statusBar;
         statusBar.addLeftTile({item: fecsStatusBar});
     },
     deactivate: function () {
-        if (disposables) {
-            disposables.clear();
-        }
+        disposables && disposables.dispose();
+        mainDisposables && mainDisposables.dispose();
         editor = null;
     }
 
