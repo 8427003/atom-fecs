@@ -5,6 +5,7 @@
 
 var fecs = require('fecs');
 var Atom = require('atom');
+var path = require('path');
 
 var statusBar = null;
 var disposables = null;
@@ -18,6 +19,13 @@ var lineDecorConfig = {
 var lineNumDecorConfig = {
     type: 'line-number',
     class: 'fecs-line-number'
+};
+var checkExtMap = {
+    '.js': true,
+    '.html': true,
+    '.css': true,
+    '.less': true,
+    '.sass': true
 };
 
 function checkHandler(success, error) {
@@ -58,9 +66,12 @@ function onChangeCursorPositionHandler() {
 function getOptions() {
     var options = fecs.getOptions() || {};
     options._ = [];
-    options._.push(editor.getPath());
+    options._.push(getPath());
 
     return options;
+}
+function getPath() {
+    return editor && editor.getPath();
 }
 
 var fecsStatusBar = document.createElement('a');
@@ -81,8 +92,22 @@ function updateStatusBar() {
 
 module.exports = {
     activate: function () {
-        disposables = new Atom.CompositeDisposable();
         editor = atom.workspace.getActiveTextEditor();
+        if (!editor) {
+            return;
+        }
+
+        var filePath = getPath();
+        if (!filePath) {
+            return;
+        }
+        var ext = path.extname(filePath);
+
+        if (!checkExtMap[ext]) {
+            return;
+        }
+
+        disposables = new Atom.CompositeDisposable();
         disposables.add(editor.onDidSave(onSaveHandler));
         disposables.add(editor.onDidChangeCursorPosition(onChangeCursorPositionHandler));
         onSaveHandler();
@@ -92,7 +117,9 @@ module.exports = {
         statusBar.addLeftTile({item: fecsStatusBar});
     },
     deactivate: function () {
-        disposables.clear();
+        if (disposables) {
+            disposables.clear();
+        }
         editor = null;
     }
 
