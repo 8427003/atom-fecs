@@ -15,8 +15,7 @@
       }
     }
   },
-  "dependencies": {},
-  "devDependencies": {
+  "dependencies": {
     "fecs": "^0.4.11"
   }
 }
