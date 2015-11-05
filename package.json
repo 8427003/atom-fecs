@@ -1,9 +1,9 @@
 {
   "name": "atom-fecs",
   "version": "1.0.0",
-  "description": "A short description of your package",
+  "description": "baidu fecs",
   "keywords": [],
-  "repository": "https://github.com/atom/atom-fecs",
+  "repository": "https://github.com/8427003/atom-fecs",
   "license": "MIT",
   "engines": {
     "atom": ">=1.0.0 <2.0.0"
