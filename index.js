@@ -30,6 +30,8 @@ var checkExtMap = {
 };
 
 function checkHandler(success, error) {
+    error = error || [];
+    error.length === 0 && error.push({});
     var errors = error[0].errors || [];
     var marker = null;
     errorLineSet = {};
