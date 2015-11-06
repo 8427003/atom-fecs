@@ -2,7 +2,6 @@
  * @author email:8427003@qq.com 百度hi：雷锋with红领巾
  * @file baidu fecs 代码检查插件;
  */
-
 var fecs = require('fecs');
 var Atom = require('atom');
 var path = require('path');
@@ -105,8 +104,10 @@ var fecsStatusBar = document.createElement('a');
 fecsStatusBar.setAttribute('id', 'fecs-statusbar');
 
 function updateStatusBar() {
+    if (!editor) {
+        return;
+    }
     var line = editor.getCursorBufferPosition().row + 1;
-
     var item = errorLineSet  && errorLineSet[line];
 
     var text = '';
