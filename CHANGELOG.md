@@ -1,3 +1,6 @@
+## 0.1.1 - Release
+* change reporter to 'baidu'
+
 ## 0.1.0 - Release
 * add show diff style as the severity
 

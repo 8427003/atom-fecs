@@ -91,6 +91,7 @@ function onChangeCursorPositionHandler() {
 
 function getOptions() {
     var options = fecs.getOptions() || {};
+    options.reporter = 'baidu';
     options._ = [];
     options._.push(getPath());
 
@@ -110,7 +111,7 @@ function updateStatusBar() {
 
     var text = '';
     if (item) {
-        text = 'fecs: ' + item.line + ':' + item.column + ' ' + item.message;
+        text = 'fecs: ' + item.line + ':' + item.column + item.message + ' [' + item.rule + ']';
     }
     fecsStatusBar.textContent = text;
     fecsStatusBar.setAttribute('title', text);
