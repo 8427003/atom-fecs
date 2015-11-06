@@ -12,4 +12,4 @@
     * 目前只支持 js，css，html，less，sass 文件检查
     * 暂不支持代码格式化功能
 
-![A screenshot of your package](https://f.cloud.github.com/assets/69169/2290250/c35d867a-a017-11e3-86be-cd7c5bf3ff9b.gif)
+![A screenshot of your package](https://raw.githubusercontent.com/8427003/atom-fecs/master/screenshot/screenshot.gif)
