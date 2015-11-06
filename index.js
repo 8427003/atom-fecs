@@ -13,14 +13,30 @@ var mainDisposables = null;
 var editor = null;
 var errorLineSet = null;
 
-var lineDecorConfig = {
-    'type': 'line',
-    'class': 'fecs-line'
+var SEVERITY = {
+    ERROR: 2,
+    WARNING: 1
 };
-var lineNumDecorConfig = {
-    'type': 'line-number',
-    'class': 'fecs-line-number'
+
+var decorConfig = {
+    lineWarning: {
+        'type': 'line',
+        'class': 'fecs-line-warning'
+    },
+    lineError: {
+        'type': 'line',
+        'class': 'fecs-line-error'
+    },
+    lineNumWarning: {
+        'type': 'line-number',
+        'class': 'fecs-line-number-warning'
+    },
+    lineNumError: {
+        'type': 'line-number',
+        'class': 'fecs-line-number-error'
+    }
 };
+
 var checkExtMap = {
     '.js': true,
     '.html': true,
@@ -36,25 +52,32 @@ function checkHandler(success, error) {
     var marker = null;
     errorLineSet = {};
     clearOldMarks();
-
     for (var i = 0, item = null, size = errors.length; i < size; i++) {
         item = errors[i];
         marker = editor.markBufferRange([[item.line - 1, 1], [item.line - 1, 1]]);
-        editor.decorateMarker(marker, lineDecorConfig);
-        editor.decorateMarker(marker, lineNumDecorConfig);
+
+        if (item.severity === SEVERITY.WARNING) {
+            editor.decorateMarker(marker, decorConfig.lineWarning);
+            editor.decorateMarker(marker, decorConfig.lineNumWarning);
+        }
+        else {
+            editor.decorateMarker(marker, decorConfig.lineError);
+            editor.decorateMarker(marker, decorConfig.lineNumError);
+        }
+
         errorLineSet[item.line] = item;
     }
     updateStatusBar();
 }
 function clearOldMarks() {
-    var lineDecors = editor.getDecorations(lineDecorConfig);
-    for (var i = 0; i < lineDecors.length; i++) {
-        lineDecors[i].destroy();
-    }
+    var decors = null;
+    var keys = Object.keys(decorConfig);
 
-    var lineNumDecors = editor.getDecorations(lineNumDecorConfig);
-    for (var j = 0; j < lineNumDecors.length; j++) {
-        lineNumDecors[j].destroy();
+    for (var i = 0; i < keys.length; i++) {
+        decors = editor.getDecorations(decorConfig[keys[i]]);
+        for (var j = 0; j < decors.length; j++) {
+            decors[j].destroy();
+        }
     }
 }
 
@@ -92,14 +115,13 @@ function updateStatusBar() {
     fecsStatusBar.textContent = text;
     fecsStatusBar.setAttribute('title', text);
 }
-function registerEvents(){
+function registerEvents() {
     editor = atom.workspace.getActiveTextEditor();
     if (!editor) {
         return;
     }
 
     var filePath = getPath();
-    console.log('curCheckFile' + filePath);
     if (!filePath) {
         return;
     }
@@ -119,8 +141,8 @@ module.exports = {
         mainDisposables = new Atom.CompositeDisposable();
         mainDisposables.add(atom.workspace.observeActivePaneItem(registerEvents));
     },
-    consumeStatusBar: function (_statusBar) {
-        statusBar = _statusBar;
+    consumeStatusBar: function ($statusBar) {
+        statusBar = $statusBar;
         statusBar.addLeftTile({item: fecsStatusBar});
     },
     deactivate: function () {

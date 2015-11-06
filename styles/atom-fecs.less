@@ -5,8 +5,11 @@
 @import "ui-variables";
 
 atom-text-editor::shadow {
-	.fecs-line {
+	.fecs-line-error {
 		background-color: fade(@background-color-error, 20%);
+	}
+	.fecs-line-warning {
+		background-color: fade(@background-color-warning, 20%);
 	}
 
 	.fecs-errors {
@@ -14,8 +17,15 @@ atom-text-editor::shadow {
 	}
 
 	.gutter {
-		.fecs-line-number {
+		.fecs-line-number-error {
 			color: @text-color-error !important;
+			opacity: 1;
+			&:hover {
+				background-color: @background-color-highlight;
+			}
+		}
+		.fecs-line-number-warning {
+			color: @text-color-warning !important;
 			opacity: 1;
 			&:hover {
 				background-color: @background-color-highlight;
