@@ -40,8 +40,8 @@ var checkExtMap = {
     '.js': true,
     '.html': true,
     '.css': true,
-    '.less': true,
-    '.sass': true
+    '.less': false,
+    '.sass': false
 };
 
 function checkHandler(success, error) {

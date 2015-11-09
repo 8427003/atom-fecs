@@ -1,3 +1,6 @@
+## 0.1.2 - Release
+* remove less temporarily
+
 ## 0.1.1 - Release
 * change reporter to 'baidu'
 
