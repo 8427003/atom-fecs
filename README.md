@@ -11,5 +11,5 @@
 ## 功能
     * 目前只支持 js，css，html，less, sass 文件检查
     * 暂不支持代码格式化功能
-
+<script src="https://gist.github.com/8427003/da7cd18d0db32141416b.js"></script>
 ![A screenshot of your package](https://raw.githubusercontent.com/8427003/atom-fecs/master/screenshot/screenshot.gif)
