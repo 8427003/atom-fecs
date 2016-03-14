@@ -1,6 +1,6 @@
 {
   "name": "atom-fecs",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "baidu fecs",
   "keywords": [
     "atom-fecs",
@@ -25,6 +25,6 @@
     }
   },
   "dependencies": {
-    "fecs": "^0.4.12"
+    "fecs": "^0.x"
   }
 }
