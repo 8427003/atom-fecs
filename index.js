@@ -2,22 +2,24 @@
  * @author email:8427003@qq.com 百度hi：雷锋with红领巾
  * @file baidu fecs 代码检查插件;
  */
-var fecs = require('fecs');
-var Atom = require('atom');
-var path = require('path');
 
-var statusBar = null;
-var disposables = null;
-var mainDisposables = null;
-var editor = null;
-var errorLineSet = null;
+/* globals atom */
 
-var SEVERITY = {
+const fecs = require('fecs');
+const Atom = require('atom');
+const path = require('path');
+
+let disposables = null;
+let mainDisposables = null;
+let editor = null;
+let errorsMap = {};
+
+let SEVERITY = {
     ERROR: 2,
     WARNING: 1
 };
 
-var decorConfig = {
+let decorConfig = {
     lineWarning: {
         'type': 'line',
         'class': 'fecs-line-warning'
@@ -36,26 +38,28 @@ var decorConfig = {
     }
 };
 
-var checkExtMap = {
-    '.js': true,
-    '.html': true,
-    '.css': true,
-    '.less': true,
-    '.sass': true
+/* eslint-disable fecs-valid-map-set */
+let checkExtMap = {
+    '.js': 1,
+    '.html': 1,
+    '.css': 1,
+    '.less': 1,
+    '.sass': 1
 };
+/* eslint-enable fecs-valid-map-set */
 
-function checkHandler(success, error) {
-    error = error || [];
-    error.length === 0 && error.push({});
-    var errors = error[0].errors || [];
-    var marker = null;
-    errorLineSet = {};
-    clearOldMarks();
-    for (var i = 0, item = null, size = errors.length; i < size; i++) {
-        item = errors[i];
-        marker = editor.markBufferRange([[item.line - 1, 1], [item.line - 1, 1]]);
 
-        if (item.severity === SEVERITY.WARNING) {
+function addDecorators(errors) {
+
+    errorsMap = {};
+
+    for (let i = 0, size = errors.length; i < size; i++) {
+
+        let item = errors[i];
+        let {line, severity} = item;
+        let marker = editor.markBufferRange([[line - 1, 1], [line - 1, 1]]);
+
+        if (severity === SEVERITY.WARNING) {
             editor.decorateMarker(marker, decorConfig.lineWarning);
             editor.decorateMarker(marker, decorConfig.lineNumWarning);
         }
@@ -64,93 +68,121 @@ function checkHandler(success, error) {
             editor.decorateMarker(marker, decorConfig.lineNumError);
         }
 
-        errorLineSet[item.line] = item;
-    }
-    updateStatusBar();
-}
-function clearOldMarks() {
-    var decors = null;
-    var keys = Object.keys(decorConfig);
+        errorsMap[line] = item;
 
-    for (var i = 0; i < keys.length; i++) {
-        decors = editor.getDecorations(decorConfig[keys[i]]);
-        for (var j = 0; j < decors.length; j++) {
-            decors[j].destroy();
+    }
+
+}
+
+function clearAllDecorators() {
+
+    Object
+        .keys(decorConfig)
+        .forEach(key =>
+            editor
+                .getDecorations(decorConfig[key])
+                .forEach(decorator => decorator.destroy())
+        );
+
+}
+
+function check() {
+    fecs.check(getOptions(), (success, errors = []) => {
+        clearAllDecorators();
+        if (errors && errors[0]) {
+            addDecorators(errors[0].errors);
         }
-    }
-}
-
-function onSaveHandler() {
-    var options = getOptions();
-    fecs.check(options, checkHandler);
-}
-function onChangeCursorPositionHandler() {
-    updateStatusBar();
+        updateStatusBar();
+    });
 }
 
 function getOptions() {
-    var options = fecs.getOptions() || {};
-    options.reporter = 'baidu';
-    options._ = [];
-    options._.push(getPath());
-
-    return options;
+    return Object.assign(
+        {},
+        fecs.getOptions(),
+        {
+            /* eslint-disable */
+            _: [
+                getPath()
+            ],
+            /* eslint-enable */
+            reporter: 'baidu'
+        }
+    );
 }
 function getPath() {
     return editor && editor.getPath();
 }
 
-var fecsStatusBar = document.createElement('a');
-fecsStatusBar.setAttribute('id', 'fecs-statusbar');
+let fecsStatusBar = (function () {
+
+    let element = document.createElement('a');
+    element.setAttribute('id', 'fecs-statusbar');
+    return element;
+
+})();
 
 function updateStatusBar() {
+
     if (!editor) {
         return;
     }
-    var line = editor.getCursorBufferPosition().row + 1;
-    var item = errorLineSet  && errorLineSet[line];
 
-    var text = '';
+    let line = editor.getCursorBufferPosition().row + 1;
+    let item = errorsMap && errorsMap[line];
+    let text = '';
+
     if (item) {
-        text = 'fecs: ' + item.line + ':' + item.column + item.message + ' [' + item.rule + ']';
+
+        let {
+            line,
+            column,
+            rule,
+            message
+        } = item;
+
+        text = `fecs: ${line}:${column} ${message} [${rule}]`;
     }
+
     fecsStatusBar.textContent = text;
     fecsStatusBar.setAttribute('title', text);
 }
+
 function registerEvents() {
     editor = atom.workspace.getActiveTextEditor();
     if (!editor) {
         return;
     }
 
-    var filePath = getPath();
+    let filePath = getPath();
     if (!filePath) {
         return;
     }
-    var ext = path.extname(filePath);
+
+    let ext = path.extname(filePath);
 
     if (!checkExtMap[ext]) {
         return;
     }
     disposables && disposables.dispose();
     disposables = new Atom.CompositeDisposable();
-    disposables.add(editor.onDidSave(onSaveHandler));
-    disposables.add(editor.onDidChangeCursorPosition(onChangeCursorPositionHandler));
-    onSaveHandler();
+    disposables.add(editor.onDidSave(check));
+    disposables.add(editor.onDidChangeCursorPosition(updateStatusBar));
+    check();
 }
+
 module.exports = {
-    activate: function () {
+    activate() {
         mainDisposables = new Atom.CompositeDisposable();
         mainDisposables.add(atom.workspace.observeActivePaneItem(registerEvents));
     },
-    consumeStatusBar: function ($statusBar) {
-        statusBar = $statusBar;
+    consumeStatusBar(statusBar) {
         statusBar.addLeftTile({item: fecsStatusBar});
     },
-    deactivate: function () {
+    deactivate() {
         disposables && disposables.dispose();
         mainDisposables && mainDisposables.dispose();
-        editor = null;
+        mainDisposables = disposables = editor = null;
     }
 
 };

@@ -1,35 +1,33 @@
-// The ui-variables file is provided by base themes provided by Atom.
-//
-// See https://github.com/atom/atom-dark-ui/blob/master/styles/ui-variables.less
-// for a full listing of what's available.
-@import "ui-variables";
+@import 'ui-variables.less';
 
-atom-text-editor::shadow {
-	.fecs-line-error {
-		background-color: fade(@background-color-error, 20%);
-	}
-	.fecs-line-warning {
-		background-color: fade(@background-color-warning, 20%);
-	}
+atom-text-editor.editor {
 
-	.fecs-errors {
-		text-align: left;
-	}
+    .fecs-line-error {
+        background-color: fade(@background-color-error, 20%);
+    }
 
-	.gutter {
-		.fecs-line-number-error {
-			color: @text-color-error !important;
-			opacity: 1;
-			&:hover {
-				background-color: @background-color-highlight;
-			}
-		}
-		.fecs-line-number-warning {
-			color: @text-color-warning !important;
-			opacity: 1;
-			&:hover {
-				background-color: @background-color-highlight;
-			}
-		}
-	}
+    .fecs-line-warning {
+        background-color: fade(@background-color-warning, 20%);
+    }
+
+    .fecs-errors {
+        text-align: left;
+    }
+
+    .gutter {
+        .fecs-line-number-error {
+            color: @text-color-error !important;
+            opacity: 1;
+            &:hover {
+                background-color: @background-color-highlight;
+            }
+        }
+        .fecs-line-number-warning {
+            color: @text-color-warning !important;
+            opacity: 1;
+            &:hover {
+                background-color: @background-color-highlight;
+            }
+        }
+    }
 }
