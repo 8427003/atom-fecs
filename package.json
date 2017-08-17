@@ -25,6 +25,7 @@
     }
   },
   "dependencies": {
-    "fecs": "*"
+    "fecs": "*",
+    "eslint-plugin-flowtype": "*"
   }
 }
